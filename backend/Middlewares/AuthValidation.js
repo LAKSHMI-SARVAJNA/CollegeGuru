@@ -1,6 +1,6 @@
 const Joi = require('joi');
 
-// Signup Validation Middleware
+
 const signupValidation = (req, res, next) => {
     const schema = Joi.object({
         name: Joi.string()
@@ -20,7 +20,7 @@ const signupValidation = (req, res, next) => {
                 'string.empty': 'Email is required.'
             }),
         mobileNumber: Joi.string()
-            .pattern(/^[0-9]{10}$/) // Regex for 10-digit number
+            .pattern(/^[0-9]{10}$/) 
             .required()
             .messages({
                 'string.pattern.base': 'Mobile number must be a 10-digit number.',
@@ -51,13 +51,13 @@ const signupValidation = (req, res, next) => {
     if (error) {
         return res.status(400).json({
             message: "Bad Request",
-            errors: error.details.map((err) => err.message) // Simplifies the error messages
+            errors: error.details.map((err) => err.message) 
         });
     }
     next();
 };
 
-// Login Validation Middleware
+
 const loginValidation = (req, res, next) => {
     const schema = Joi.object({
         email: Joi.string()

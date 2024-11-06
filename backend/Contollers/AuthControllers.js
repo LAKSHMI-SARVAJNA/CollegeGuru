@@ -7,7 +7,7 @@ const signup = async (req,res) => {
     try{
         const {name, email,mobileNumber,stream,level, password} = req.body;
 
-        // Check if email or mobile number already exists
+      
         const existingUser = await UserModel.findOne({
             $or: [{ email }, { mobileNumber }]
         });
@@ -19,10 +19,10 @@ const signup = async (req,res) => {
             });
         }
 
-       // Hash the password
+       
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Create and save the new user
+     
         const newUser = new UserModel({
             name,
             email,
@@ -40,7 +40,7 @@ const signup = async (req,res) => {
         });
 
     } catch (err) {
-        console.error("Signup Error:", err); // Log error for debugging
+        console.error("Signup Error:", err); 
         return res.status(500).json({
             message: 'Internal server error',
             success: false
@@ -65,12 +65,12 @@ const login = async (req,res) => {
             .json({message :errorMsg , success: false});
         }
 
-        // Check if JWT_SECRET is defined
+        
         if (!process.env.JWT_SECRET) {
             throw new Error('JWT_SECRET is not defined in environment variables.');
         }
 
-        // Generate JWT token
+     
         const jwtToken =  jwt.sign(
             {email: user.email, _id: user._id},
             process.env.JWT_SECRET,
@@ -88,7 +88,7 @@ const login = async (req,res) => {
         });
 
     } catch (err) {
-        console.error("Login Error:", err); // Log error for debugging
+        console.error("Login Error:", err); 
         return res.status(500).json({
             message: 'Internal server error',
             success: false

@@ -15,7 +15,7 @@ const UserSchema = new Schema({
         match: [/^\S+@\S+\.\S+$/, 'Please enter a valid email address.']
     },
     mobileNumber: {
-        type: String, // Changed to string to allow flexibility
+        type: String, 
         required: [true, 'Mobile number is required.'],
         unique: true,
         match: [/^\d{10}$/, 'Mobile number must be a 10-digit number.']
@@ -42,7 +42,7 @@ const UserSchema = new Schema({
         minlength: [8, 'Password should have at least 8 characters.']
     },
 }, {
-    timestamps: true // Automatically adds createdAt and updatedAt fields
+    timestamps: true 
 });
 
 const UserModel = mongoose.model('User', UserSchema);
