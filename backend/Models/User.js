@@ -1,38 +1,49 @@
-const { required, number } = require('joi');
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
-    name:{
+    name: {
         type: String,
-        required: true,
+        required: [true, 'Name is required.'],
+        minlength: [3, 'Name should have at least 3 characters.'],
+        maxlength: [100, 'Name should have at most 100 characters.']
     },
-    email:{
+    email: {
         type: String,
-        required: true,
-        unique: true
+        required: [true, 'Email is required.'],
+        unique: true,
+        match: [/^\S+@\S+\.\S+$/, 'Please enter a valid email address.']
     },
-    mobileNumber:{
-        type:Number,
-        required: true,
-        unique: true
+    mobileNumber: {
+        type: String, // Changed to string to allow flexibility
+        required: [true, 'Mobile number is required.'],
+        unique: true,
+        match: [/^\d{10}$/, 'Mobile number must be a 10-digit number.']
     },
-    stream:{
+    stream: {
         type: String,
-        required: true,
-        enum:['Commerce and Banking','Design','Engineering','Management','Hotel Management','Medical']
+        required: [true, 'Stream is required.'],
+        enum: {
+            values: ['Commerce and Banking', 'Design', 'Engineering', 'Management', 'Hotel Management', 'Medical'],
+            message: '{VALUE} is not a valid stream.'
+        }
     },
-    level:{
+    level: {
         type: String,
-        required: true,
-        enum:['UG','PG','Diploma','Ph.D','Certificate']
+        required: [true, 'Level is required.'],
+        enum: {
+            values: ['UG', 'PG', 'Diploma', 'Ph.D', 'Certificate'],
+            message: '{VALUE} is not a valid level.'
+        }
     },
-    password:{
+    password: {
         type: String,
-        required: true,
+        required: [true, 'Password is required.'],
+        minlength: [8, 'Password should have at least 8 characters.']
     },
-
+}, {
+    timestamps: true // Automatically adds createdAt and updatedAt fields
 });
 
-const UserModel = mongoose.model('users', UserSchema);
+const UserModel = mongoose.model('User', UserSchema);
 module.exports = UserModel;

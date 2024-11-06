@@ -1,38 +1,94 @@
-const joi = require('joi');
+const Joi = require('joi');
 
-const signupValidation = (req,res,next)=> {
-    const schema = joi.object({
-        name: joi.string().min(3).max(100).required(),
-        email: joi.string().email().required(),
-        mobileNumber: joi.number().required(),
-        stream:joi.string().required(),
-        level:joi.string().required(),
-        password: joi.string().min(8).max(100).required()
-
+// Signup Validation Middleware
+const signupValidation = (req, res, next) => {
+    const schema = Joi.object({
+        name: Joi.string()
+            .min(3)
+            .max(100)
+            .required()
+            .messages({
+                'string.empty': 'Name is required.',
+                'string.min': 'Name should have a minimum length of 3.',
+                'string.max': 'Name should have a maximum length of 100.'
+            }),
+        email: Joi.string()
+            .email()
+            .required()
+            .messages({
+                'string.email': 'Please enter a valid email address.',
+                'string.empty': 'Email is required.'
+            }),
+        mobileNumber: Joi.string()
+            .pattern(/^[0-9]{10}$/) // Regex for 10-digit number
+            .required()
+            .messages({
+                'string.pattern.base': 'Mobile number must be a 10-digit number.',
+                'string.empty': 'Mobile number is required.'
+            }),
+        stream: Joi.string()
+            .required()
+            .messages({
+                'string.empty': 'Stream is required.'
+            }),
+        level: Joi.string()
+            .required()
+            .messages({
+                'string.empty': 'Level is required.'
+            }),
+        password: Joi.string()
+            .min(8)
+            .max(100)
+            .required()
+            .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/)
+            .messages({
+                'string.pattern.base': 'Password must contain uppercase, lowercase, number, and special character.',
+                'string.empty': 'Password is required.'
+            })
     });
-    const {error} = schema.validate(req.body);
-    if(error) {
-        return res.status(400)
-        .json({message: "Bad Request", error})
+
+    const { error } = schema.validate(req.body, { abortEarly: false });
+    if (error) {
+        return res.status(400).json({
+            message: "Bad Request",
+            errors: error.details.map((err) => err.message) // Simplifies the error messages
+        });
     }
     next();
-}
+};
 
-const loginValidation = (req,res,next)=> {
-    const schema = joi.object({
-        email: joi.string().email().required(),
-        password: joi.string().min(8).max(100).required()
-
+// Login Validation Middleware
+const loginValidation = (req, res, next) => {
+    const schema = Joi.object({
+        email: Joi.string()
+            .email()
+            .required()
+            .messages({
+                'string.email': 'Please enter a valid email address.',
+                'string.empty': 'Email is required.'
+            }),
+        password: Joi.string()
+            .min(8)
+            .max(100)
+            .required()
+            .messages({
+                'string.min': 'Password should have a minimum length of 8.',
+                'string.max': 'Password should have a maximum length of 100.',
+                'string.empty': 'Password is required.'
+            })
     });
-    const {error} = schema.validate(req.body);
-    if(error) {
-        return res.status(400)
-        .json({message: "Bad Request", error})
+
+    const { error } = schema.validate(req.body, { abortEarly: false });
+    if (error) {
+        return res.status(400).json({
+            message: "Bad Request",
+            errors: error.details.map((err) => err.message)
+        });
     }
     next();
-}
+};
 
 module.exports = {
     signupValidation,
     loginValidation
-}
+};
