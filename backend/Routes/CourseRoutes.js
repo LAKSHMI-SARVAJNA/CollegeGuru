@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const CourseController = require('../Contollers/CourseController');
+const authenticateUser = require('../middlewares/authenticateUser');
 
 router.post('/', CourseController.createCourse); 
 
@@ -16,5 +17,7 @@ router.delete('/:id', CourseController.deleteCourse);
 router.post('/:courseId/reviews', CourseController.addReview);
 
 router.get('/:courseId/reviews', CourseController.getCourseReviews);
+
+router.post('/enroll', authenticateUser, CourseController.enrollInCourse);
 
 module.exports = router;

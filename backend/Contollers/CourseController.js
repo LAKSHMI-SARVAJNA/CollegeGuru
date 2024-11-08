@@ -1,7 +1,6 @@
-
-const Course = require('../models/Course');  
-const Notification = require('../Models/Notification.js');
-const { sendNotification } = require('../services/notificationService');
+const User = require('../Models/User.js');
+const Course = require('../Models/Course.js');  
+const { sendNotification } = require('../services/notificationService.js');
 const createCourse = async (req, res) => {
     try {
         const course = new Course(req.body);
@@ -88,10 +87,10 @@ const updateCourse = async (req, res) => {
 
         const usersEnrolled = await User.find({ enrolledCourses: { $in: [course._id] } });
 
-        usersEnrolled.forEach((user) => {
+        for (let user of usersEnrolled) {
             const message = `The course "${course.title}" has been updated. Check out the new details!`;
-            sendNotification(user._id, message); 
-        });
+            await sendNotification(user._id, message, course._id); 
+        }
 
 
         res.status(200).json({ success: true, data: course });
@@ -150,6 +149,50 @@ const getCourseReviews = async (req, res) => {
     }
 };
 
+const enrollInCourse = async (req, res) => {
+    try {
+        if (!req.user || !req.user._id) {
+            return res.status(401).json({ success: false, message: 'User is not authenticated' });
+        }
+        const userId = req.user._id;  
+        const { courseId } = req.body; 
+        // Check if the user and course exist
+        const user = await User.findById(userId);
+        const course = await Course.findById(courseId);
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+        if (!course) {
+            return res.status(404).json({ success: false, message: 'Course not found' });
+        }
+
+        // Check if the user is already enrolled in the course
+        if (user.enrolledCourses.includes(courseId)) {
+            return res.status(400).json({ success: false, message: 'User is already enrolled in this course' });
+        }
+
+        // Enroll the user in the course
+        user.enrolledCourses.push(courseId);
+        course.enrolledUsers.push(userId);
+        await user.save();
+
+        // Add the user to the course's enrolled users
+     
+        await course.save();
+
+        res.status(200).json({
+            success: true,
+            message: `User ${user.name} successfully enrolled in course ${course.title}`,
+            data: { userId, courseId }
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Failed to enroll in course' });
+    }
+};
+
+
 module.exports = {
     createCourse,
     getAllCourses,
@@ -157,5 +200,6 @@ module.exports = {
     updateCourse,
     deleteCourse,
     addReview,
-    getCourseReviews
+    getCourseReviews,
+    enrollInCourse
 };
