@@ -1,6 +1,7 @@
 
 const Course = require('../models/Course');  
-
+const Notification = require('../Models/Notification.js');
+const { sendNotification } = require('../services/notificationService');
 const createCourse = async (req, res) => {
     try {
         const course = new Course(req.body);
@@ -15,12 +16,12 @@ const getAllCourses = async (req, res) => {
   
   
     try {
-        // Pagination
-        const page = parseInt(req.query.page) || 1; // Default to page 1
-        const limit = parseInt(req.query.limit) || 10; // Default to 10 courses per page
+      
+        const page = parseInt(req.query.page) || 1; 
+        const limit = parseInt(req.query.limit) || 10; 
         const skip = (page - 1) * limit;
 
-        // Filtering
+      
         let filter = {};
         if (req.query.duration) {
             filter.duration = req.query.duration;
@@ -32,22 +33,18 @@ const getAllCourses = async (req, res) => {
             filter.ratings = { $gte: parseFloat(req.query.minRating) };
         }
         if (req.query.title) {
-            filter.title = new RegExp(req.query.title, 'i'); // Case-insensitive title search
+            filter.title = new RegExp(req.query.title, 'i'); 
         }
 
-        // Sorting
         const sortBy = req.query.sort ? req.query.sort.split(',').join(' ') : 'createdAt';
 
-        // Query with filtering, sorting, and pagination
         const courses = await Course.find(filter)
             .sort(sortBy)
             .skip(skip)
             .limit(limit);
 
-        // Total count of documents that match the filter
         const total = await Course.countDocuments(filter);
 
-        // Response with pagination metadata
         res.status(200).json({
             success: true,
             data: courses,
@@ -89,10 +86,21 @@ const updateCourse = async (req, res) => {
             return res.status(404).json({ success: false, message: 'Course not found' });
         }
 
+        const usersEnrolled = await User.find({ enrolledCourses: { $in: [course._id] } });
+
+        usersEnrolled.forEach((user) => {
+            const message = `The course "${course.title}" has been updated. Check out the new details!`;
+            sendNotification(user._id, message); 
+        });
+
+
         res.status(200).json({ success: true, data: course });
-        } catch (error) {
+    } catch (error) {
         res.status(500).json({ success: false, message: error.message });
-             }
+    }
+
+
+             
 };
 const deleteCourse = async (req, res) => {
     try {
@@ -108,10 +116,46 @@ const deleteCourse = async (req, res) => {
     }
 };
 
+const addReview = async (req, res) => {
+    const { courseId } = req.params;
+    const { userId, reviewText, rating } = req.body;
+
+    try {
+        const course = await Course.findById(courseId);
+        if (!course) {
+            return res.status(404).json({ success: false, message: 'Course not found' });
+        }
+        const review = { userId, reviewText, rating };
+        course.reviews.push(review);
+
+        await course.save();
+        res.status(200).json({ success: true, message: 'Review added', data: course });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+const getCourseReviews = async (req, res) => {
+    const { courseId } = req.params;
+
+    try {
+        const course = await Course.findById(courseId).populate('reviews.userId', 'name'); 
+        if (!course) {
+            return res.status(404).json({ success: false, message: 'Course not found' });
+        }
+
+        res.status(200).json({ success: true, data: course.reviews });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
 module.exports = {
     createCourse,
     getAllCourses,
     getCourseById,
     updateCourse,
-    deleteCourse
+    deleteCourse,
+    addReview,
+    getCourseReviews
 };

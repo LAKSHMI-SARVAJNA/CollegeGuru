@@ -6,7 +6,7 @@ const AuthRouter = require('./Routes/AuthRouter.js');
 const CourseRoutes = require('./Routes/CourseRoutes.js');
 
 require('dotenv').config();
-require('./Models/db.js');
+require('./config/db.js');
 const PORT = process.env.PORT || 8080;
 
 app.use(bodyParser.json());

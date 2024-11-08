@@ -43,6 +43,9 @@ const UserSchema = new Schema({
     },
     verificationToken: { type: String },
     verificationTokenExpiresAt: { type: Date },
+
+    
+    enrolledCourses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }],
 }, {
     timestamps: true 
 });

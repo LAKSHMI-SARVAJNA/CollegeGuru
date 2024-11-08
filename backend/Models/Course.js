@@ -14,8 +14,30 @@ const courseSchema = new mongoose.Schema({
     fees:{
         type: Number
      },
-   // college: { type: mongoose.Schema.Types.ObjectId, ref: 'College' },
+    college: {
+        type: String,
+       enum: [
+            "Greenwood University",
+            "Hillside College of Arts",
+            "Lakeview Technical Institute",
+            "Northfield Polytechnic",
+            "Brighton School of Management",
+            "Sunrise College of Technology",
+            "Silver Valley University",
+            "Riverside University",
+            "Crestwood University of Science",
+            "Maple Leaf College"
+        ]
+     },
     ratings: [{ type: Number }],
+
+    reviews: [{ 
+        userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+        reviewText: { type: String },
+        rating: { type: Number }
+    }],
+    enrolledUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+
 }, { timestamps: true });
 
 courseSchema.virtual('averageRating').get(function() {
@@ -24,7 +46,6 @@ courseSchema.virtual('averageRating').get(function() {
     return sum / this.ratings.length;
 });
 
-// Ensure virtuals are included in JSON and Object responses
 courseSchema.set('toJSON', { virtuals: true });
 courseSchema.set('toObject', { virtuals: true });
 
