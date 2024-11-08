@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const UserModel = require("../models/User");
+const generateTokenAndSetCookie = require("../utils/generateTokenAndSetCookie.js");
 
 const signup = async (req, res) => {
     try {
@@ -20,7 +21,7 @@ const signup = async (req, res) => {
 
        
         const hashedPassword = await bcrypt.hash(password, 10);
-
+        const verificationToken = Math.floor(100000 + Math.random()*900000).toString();
       
         const newUser = new UserModel({
             name,
@@ -28,10 +29,15 @@ const signup = async (req, res) => {
             mobileNumber,
             stream,
             level,
-            password: hashedPassword
+            password: hashedPassword,
+            verificationToken,
+            verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000,
         });
 
         await newUser.save();
+
+        //jwt
+        generateTokenAndSetCookie(res, newUser._id);
 
         return res.status(201).json({
             message: 'Signup successful',

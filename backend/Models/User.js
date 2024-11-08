@@ -41,18 +41,8 @@ const UserSchema = new Schema({
         required: [true, 'Password is required.'],
         minlength: [8, 'Password should have at least 8 characters.']
     },
-    otp: {
-        type: String,
-        required: false,
-    },
-    otpExpiry: {
-        type: Date,
-        required: false,
-    },
-    verified: {
-        type: Boolean,
-        default: false
-    }
+    verificationToken: { type: String },
+    verificationTokenExpiresAt: { type: Date },
 }, {
     timestamps: true 
 });
