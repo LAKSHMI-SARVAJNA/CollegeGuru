@@ -89,7 +89,7 @@ const updateCourse = async (req, res) => {
 
         for (let user of usersEnrolled) {
             const message = `The course "${course.title}" has been updated. Check out the new details!`;
-            await sendNotification(user._id, message, course._id); 
+            await sendNotification(user._id, message, course._id,user.email); 
         }
 
 
@@ -156,7 +156,6 @@ const enrollInCourse = async (req, res) => {
         }
         const userId = req.user._id;  
         const { courseId } = req.body; 
-        // Check if the user and course exist
         const user = await User.findById(userId);
         const course = await Course.findById(courseId);
 
@@ -167,17 +166,14 @@ const enrollInCourse = async (req, res) => {
             return res.status(404).json({ success: false, message: 'Course not found' });
         }
 
-        // Check if the user is already enrolled in the course
         if (user.enrolledCourses.includes(courseId)) {
             return res.status(400).json({ success: false, message: 'User is already enrolled in this course' });
         }
 
-        // Enroll the user in the course
         user.enrolledCourses.push(courseId);
         course.enrolledUsers.push(userId);
         await user.save();
 
-        // Add the user to the course's enrolled users
      
         await course.save();
 
