@@ -11,9 +11,52 @@ const courseSchema = new mongoose.Schema({
     duration:{
          type: String
          },
-    fees:{
-        type: Number
-     },
+         minimumEligibility: {
+            type: String,
+            required: true,
+            
+          },
+          upperAgeLimit: {
+            type: String,
+          
+          },
+
+          entranceExams: {
+            type: [String],
+            required: true,
+           
+          },
+          admissionProcess: {
+            type: String,
+            required: true,
+       
+          },
+          managementQuotaAvailable: {
+            type: Boolean,
+            default: true,
+          },
+          averageFee: {
+            type: Number,
+            required: true,
+          
+          },
+          scholarships: {
+            type: [String],
+          },
+          internships: {
+            type: String,
+ 
+          },
+          averageStipendForInternships: {
+            type: String,
+          },
+          averageStartingSalary: {
+            type: String,
+          },
+          careerOptions: {
+            type: [String]
+          },
+   
     college: {
         type: String,
        enum: [

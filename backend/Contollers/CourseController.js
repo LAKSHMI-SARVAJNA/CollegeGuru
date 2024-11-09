@@ -26,7 +26,7 @@ const getAllCourses = async (req, res) => {
             filter.duration = req.query.duration;
         }
         if (req.query.minFees && req.query.maxFees) {
-            filter.fees = { $gte: parseInt(req.query.minFees), $lte: parseInt(req.query.maxFees) };
+            filter.averageFee = { $gte: parseInt(req.query.minFees), $lte: parseInt(req.query.maxFees) };
         }
         if (req.query.minRating) {
             filter.ratings = { $gte: parseFloat(req.query.minRating) };
