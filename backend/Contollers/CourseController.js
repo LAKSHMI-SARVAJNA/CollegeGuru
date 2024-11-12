@@ -87,10 +87,12 @@ const updateCourse = async (req, res) => {
 
         const usersEnrolled = await User.find({ enrolledCourses: { $in: [course._id] } });
 
-        for (let user of usersEnrolled) {
+        const notificationPromises = usersEnrolled.map((user) => {
             const message = `The course "${course.title}" has been updated. Check out the new details!`;
-            await sendNotification(user._id, message, course._id,user.email); 
-        }
+            return sendNotification(user._id, message, course._id, user.email);
+        });
+        await Promise.all(notificationPromises);
+        
 
 
         res.status(200).json({ success: true, data: course });

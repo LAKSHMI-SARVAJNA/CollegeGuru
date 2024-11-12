@@ -9,7 +9,7 @@ const transporter = nodemailer.createTransport({
     pass: process.env.MAILTRAP_PASS
     }
 });
-const sendNotification = async (userId, message, courseId) => {
+const sendNotification = async (userId, message, courseId, userEmail) => {
     try {
         const notification = new Notification({
             userId: userId,
