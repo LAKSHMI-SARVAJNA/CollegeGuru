@@ -18,7 +18,7 @@ const sendNotification = async (userId, message, courseId, userEmail) => {
         });
         const mailOptions = {
             from: process.env.MAILTRAP_FROM, 
-            to: process.env.MAILTRAP_TO, 
+            to: userEmail, 
             subject: 'Course Update Notification', 
             text: message 
         };
