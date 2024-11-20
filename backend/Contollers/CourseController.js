@@ -3,7 +3,39 @@ const Course = require('../Models/Course.js');
 const { sendNotification } = require('../services/notificationService.js');
 const createCourse = async (req, res) => {
     try {
-        const course = new Course(req.body);
+        const {
+            title,
+            description,
+            duration,
+            minimumEligibility,
+            upperAgeLimit,
+            entranceExams,
+            admissionProcess,
+            managementQuotaAvailable,
+            averageFee,
+            scholarships,
+            internships,
+            averageStipendForInternships,
+            averageStartingSalary,
+            careerOptions
+        } = req.body;
+
+        const course = new Course({
+            title,
+            description,
+            duration,
+            minimumEligibility,
+            upperAgeLimit,
+            entranceExams,
+            admissionProcess,
+            managementQuotaAvailable,
+            averageFee,
+            scholarships,
+            internships,
+            averageStipendForInternships,
+            averageStartingSalary,
+            careerOptions
+        });
         await course.save();
         res.status(201).json({ success: true, data: course });
     } catch (error) {
