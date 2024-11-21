@@ -40,6 +40,7 @@ const courseSchema = new mongoose.Schema({
             required: true,
           
           },
+
           scholarships: {
             type: [String],
           },
@@ -56,7 +57,11 @@ const courseSchema = new mongoose.Schema({
           careerOptions: {
             type: [String]
           },
-   
+          images: [
+      
+            {url: String}
+          
+        ],
     college: {
         type: String,
        enum: [
@@ -72,6 +77,7 @@ const courseSchema = new mongoose.Schema({
             "Maple Leaf College"
         ]
      },
+    
     ratings: [{ type: Number }],
 
     reviews: [{ 

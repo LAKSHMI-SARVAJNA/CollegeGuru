@@ -2,8 +2,9 @@ const express = require('express');
 const router = express.Router();
 const CourseController = require('../Contollers/CourseController');
 const authenticateUser = require('../Middlewares/authenticateUser');
+const sanitizeInput = require('../Middlewares/sanitizeInput')
 
-router.post('/', CourseController.createCourse); 
+router.post('/' , CourseController.createCourse); 
 
 router.get('/', CourseController.getAllCourses);
 

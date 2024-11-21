@@ -3,45 +3,17 @@ const Course = require('../Models/Course.js');
 const { sendNotification } = require('../services/notificationService.js');
 const createCourse = async (req, res) => {
     try {
-        const {
-            title,
-            description,
-            duration,
-            minimumEligibility,
-            upperAgeLimit,
-            entranceExams,
-            admissionProcess,
-            managementQuotaAvailable,
-            averageFee,
-            scholarships,
-            internships,
-            averageStipendForInternships,
-            averageStartingSalary,
-            careerOptions
-        } = req.body;
+        const courseData = req.body;
+        const course = new Course(courseData);
 
-        const course = new Course({
-            title,
-            description,
-            duration,
-            minimumEligibility,
-            upperAgeLimit,
-            entranceExams,
-            admissionProcess,
-            managementQuotaAvailable,
-            averageFee,
-            scholarships,
-            internships,
-            averageStipendForInternships,
-            averageStartingSalary,
-            careerOptions
-        });
         await course.save();
         res.status(201).json({ success: true, data: course });
     } catch (error) {
+        console.error(error);  // This will help you identify the exact cause of the error.
         res.status(500).json({ success: false, message: error.message });
     }
 };
+
 
 const getAllCourses = async (req, res) => {
   
@@ -58,8 +30,9 @@ const getAllCourses = async (req, res) => {
             filter.duration = req.query.duration;
         }
         if (req.query.minFees && req.query.maxFees) {
-            filter.averageFee = { $gte: parseInt(req.query.minFees), $lte: parseInt(req.query.maxFees) };
-        }
+            filter.averageFee = { $gte: parseInt(req.query.minFees), $lte: parseInt(req.query.maxFees) 
+
+            };}
         if (req.query.minRating) {
             filter.ratings = { $gte: parseFloat(req.query.minRating) };
         }
